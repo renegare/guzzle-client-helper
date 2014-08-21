@@ -1,0 +1,24 @@
+{
+    "name": "renegare/http",
+    "description": "Simple testable generic http client",
+    "keywords": ["http", "client", "renegare"],
+    "license": "MIT",
+
+    "autoload": {"psr-4": {
+        "Renegare\\HTTP\\": "."
+    }},
+
+    "require": {
+        "php": ">=5.4.0",
+        "guzzlehttp/guzzle":"~4.0",
+        "guzzlehttp/log-subscriber": "1.*"
+    },
+
+    "require-dev": {
+        "phpunit/phpunit": "4.1.*"
+    },
+
+    "scripts": {
+        "test": "phpunit"
+    }
+}
