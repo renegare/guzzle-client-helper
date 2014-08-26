@@ -14,14 +14,12 @@ trait GuzzlerTrait {
      */
     public function setGuzzle(GuzzleClient $client = null) {
         $this->guzzleHttp = $client;
-        $this->info('set guzzle mock', ['guzzle' => $this->guzzleHttp]);
     }
 
     /**
      * {@inheritdoc}
      */
     public function getGuzzle() {
-        $this->info('get guzzle mock', ['guzzle' => $this->guzzleHttp]);
         if(!$this->guzzleHttp) {
             $client = new GuzzleClient();
             if($this->logger) {

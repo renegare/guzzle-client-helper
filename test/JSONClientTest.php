@@ -10,33 +10,30 @@ class JSONClientTest extends \PHPUnit_Framework_TestCase {
 
     public function provideTestSupportedMethodsData() {
         return [
-            ['get', false],
-            ['post', true]
+            ['get', ['some' => 'data'], http_build_query(['some' => 'data']), false],
+            ['post', ['some' => 'data'], json_encode(['some' => 'data']), true],
+            ['post', null, '', false]
         ];
     }
 
     /**
      * @dataProvider provideTestSupportedMethodsData
      */
-    public function testRequestBody($expectedMethod, $expectedJsonContentType) {
+    public function testRequestBody($expectedMethod, $expectedData, $expectedBody, $expectedJsonContentType) {
         $expectedResource = 'some/resource';
-        $expectedData = ['some' => 'data'];
         $expectedHeaders = ['SOME' => 'header'];
         $mockResponse = $this->getMock('GuzzleHttp\Message\ResponseInterface');
 
         $client = new JSONClient('http://api.example.com', $this->getMock('Psr\Log\LoggerInterface'));
 
-        $this->mockHTTPResponse($client, $expectedMethod, 'http://api.example.com/some/resource', function($request) use ($mockResponse, $expectedData, $expectedJsonContentType) {
+        $this->mockHTTPResponse($client, $expectedMethod, 'http://api.example.com/some/resource', function($request) use ($mockResponse, $expectedBody, $expectedJsonContentType) {
 
-            $rawBody = (string) $request->getBody();
+            $this->assertEquals($expectedBody, (string) $request->getBody());
 
             if($expectedJsonContentType) {
                 $this->assertEquals('application/json', $request->getHeader('Content-Type'));
-                $this->assertEquals($expectedData, json_decode($rawBody, true));
             } else {
-                $this->assertNotEquals('application/json', $request->getHeader('Content-Type'));
-                parse_str($rawBody, $query);
-                $this->assertEquals($expectedData, $query);
+                $this->assertEquals('', $request->getHeader('Content-Type'));
             }
 
             return $mockResponse;
