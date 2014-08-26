@@ -11,7 +11,7 @@ trait GuzzlerTestTrait {
             ->setMethods(['send'])
             ->getMock();
 
-        $mockHttpClient->expects($expectToBeCalled? $this->any() : $this->never())
+        $mockHttpClient->expects($expectToBeCalled? $this->once() : $this->never())
             ->method('send')
             ->will($this->returnCallback(function($request) use ($client, $expectedResource, $expectedMethod, $requestCallback){
                 $client->setGuzzle(null);
