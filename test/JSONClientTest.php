@@ -41,4 +41,17 @@ class JSONClientTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertSame($mockResponse, $client->$expectedMethod($expectedResource, $expectedData, $expectedHeaders));
     }
+
+    /**
+     * @expectedException GuzzleHttp\Exception\ClientException
+     */
+    public function testClientExceptionsAreThrown() {
+        $client = new JSONClient('http://api.example.com', $this->getMock('Psr\Log\LoggerInterface'));
+
+        $this->mockHTTPResponse($client, 'GET', 'http://api.example.com/some/resource', function($request) {
+            throw new \GuzzleHttp\Exception\ClientException('WTH', $request);
+        });
+
+        $client->get('some/resource');
+    }
 }
