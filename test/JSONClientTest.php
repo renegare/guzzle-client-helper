@@ -10,30 +10,28 @@ class JSONClientTest extends \PHPUnit_Framework_TestCase {
 
     public function provideTestSupportedMethodsData() {
         return [
-            ['get', ['some' => 'data'], http_build_query(['some' => 'data']), false],
-            ['post', ['some' => 'data'], json_encode(['some' => 'data']), true],
-            ['post', null, '', false]
+            ['get', ['some' => 'data'], null, false, 'http://api.example.com/some/resource?' . http_build_query(['some' => 'data'])],
+            ['post', ['some' => 'data'], json_encode(['some' => 'data']), true, 'http://api.example.com/some/resource'],
+            ['post', null, '', false, 'http://api.example.com/some/resource']
         ];
     }
 
     /**
      * @dataProvider provideTestSupportedMethodsData
      */
-    public function testRequestBody($expectedMethod, $expectedData, $expectedBody, $expectedJsonContentType) {
+    public function testRequestBody($expectedMethod, $expectedData, $expectedBody, $expectedJsonContentType, $expectedUrl) {
         $expectedResource = 'some/resource';
         $expectedHeaders = ['SOME' => 'header'];
         $mockResponse = $this->getMock('GuzzleHttp\Message\ResponseInterface');
 
         $client = new JSONClient('http://api.example.com', $this->getMock('Psr\Log\LoggerInterface'));
 
-        $this->mockHTTPResponse($client, $expectedMethod, 'http://api.example.com/some/resource', function($request) use ($mockResponse, $expectedBody, $expectedJsonContentType) {
-
-            $this->assertEquals($expectedBody, (string) $request->getBody());
+        $this->mockHTTPResponse($client, $expectedMethod, $expectedUrl, function($request) use ($mockResponse, $expectedBody, $expectedJsonContentType) {
 
             if($expectedJsonContentType) {
                 $this->assertEquals('application/json', $request->getHeader('Content-Type'));
             } else {
-                $this->assertEquals('', $request->getHeader('Content-Type'));
+                $this->assertNotEquals('application/json', $request->getHeader('Content-Type'));
             }
 
             return $mockResponse;

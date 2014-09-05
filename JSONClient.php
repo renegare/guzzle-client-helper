@@ -11,6 +11,17 @@ class JSONClient extends AbstractClient {
      */
     protected function request($method = 'get', $resource=null, $data = null, array $headers = []) {
         $options = ['headers' => $headers];
+
+        if(is_array($data)) {
+            if($method === 'get') {
+                $options['query'] = $data;
+            } else {
+                $options['json'] = $data;
+            }
+        } else {
+            $options['body'] = $data;
+        }
+
         $type = $method !== 'get' && is_array($data) ? 'json' : 'body';
         if($data) {
             $options[$type] = $data;
@@ -22,8 +33,10 @@ class JSONClient extends AbstractClient {
             $response = $this->getGuzzle()->send($request);
             $this->debug('>> Response from platform resource ...', ['response' => (string) $response]);
         } catch (ClientException $e) {
-            $response = $e->getResponse();
-            $this->error('!! Error response ' . $response->getStatusCode(), ['response' => (string) $response]);
+            if($e->hasResponse()) {
+                $response = $e->getResponse();
+                $this->error('!! Error response ' . $response->getStatusCode(), ['response' => (string) $response]);
+            }
             throw $e;
         }
         return $response;
