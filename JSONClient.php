@@ -22,7 +22,8 @@ class JSONClient extends AbstractClient {
             $response = $this->getGuzzle()->send($request);
             $this->debug('>> Response from platform resource ...', ['response' => (string) $response]);
         } catch (ClientException $e) {
-            $this->error('!! Platform error response', ['response' => (string) $e->getResponse()]);
+            $response = $e->getResponse();
+            $this->error('!! Error response ' . $response->getStatusCode(), ['response' => (string) $response]);
             throw $e;
         }
         return $response;
