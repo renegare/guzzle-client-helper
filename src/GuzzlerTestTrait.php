@@ -66,10 +66,6 @@ trait GuzzlerTestTrait {
     }
 
     public function createMockResponse($response = null, RequestInterface $request = null) {
-        if($response instanceOf ResponseInterface) {
-            $response = (string) $response;
-        }
-
         if(is_array($response)) {
             $json = json_encode($response);
             $response = sprintf(<<<EOF
