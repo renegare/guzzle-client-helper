@@ -65,13 +65,12 @@ EOF
         $this->assertNotSame($responseMessage, $response);
         $this->assertEquals((string) $responseMessage, (string) $response);
 
-        // mock  with array given json contype[d] request
+        // mock with array
         $jsonResponse = ['some' => 'data'];
         $this->assertRequest($client, [], $jsonResponse);
-        $response = $client->getGuzzle()->get('https://api.example.com/resource', [
-            'headers' => ['Content-Type' => 'application/json']
-        ]);
+        $response = $client->getGuzzle()->get('https://api.example.com/resource');
         $this->assertEquals($jsonResponse, $response->json());
+        $this->assertEquals('application/json', $response->getHeader('Content-type'));
 
     }
 

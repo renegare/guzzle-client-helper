@@ -66,7 +66,7 @@ trait GuzzlerTestTrait {
             $response = (string) $response;
         }
 
-        if(is_array($response) && (!$request || $request->getHeader('Content-Type') === 'application/json')) {
+        if(is_array($response)) {
             $json = json_encode($response);
             $response = sprintf(<<<EOF
 HTTP/1.1 200 OK
