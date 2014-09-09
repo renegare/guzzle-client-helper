@@ -1,21 +1,21 @@
 <?php
 
-namespace Renegare\HTTP\Test;
+namespace Renegare\GuzzleClientHelper\Test;
 
 use GuzzleHttp\Exception\ClientException;
 
 class GuzzlerTest extends \PHPUnit_Framework_TestCase {
-    use \Renegare\HTTP\GuzzlerTestTrait;
+    use \Renegare\GuzzleClientHelper\GuzzlerTestTrait;
 
     public function testGuzzler() {
-        $client = $this->getMockForAbstractClass('Renegare\HTTP\AbstractClient', ['http://api.example.com', $this->getMock('Psr\Log\LoggerInterface')]);
+        $client = $this->getMockForAbstractClass('Renegare\GuzzleClientHelper\AbstractClient', ['http://api.example.com', $this->getMock('Psr\Log\LoggerInterface')]);
         $guzzleClient = $client->getGuzzle();
         $this->assertInstanceOf('GuzzleHttp\Client', $guzzleClient);
         $this->assertEquals('http://api.example.com', $guzzleClient->getBaseUrl());
     }
 
     public function testGuzzleRequestCanBeAsserted() {
-        $client = $this->getMockForAbstractClass('Renegare\HTTP\AbstractClient', ['https://api.example.com', $this->getMock('Psr\Log\LoggerInterface')]);
+        $client = $this->getMockForAbstractClass('Renegare\GuzzleClientHelper\AbstractClient', ['https://api.example.com', $this->getMock('Psr\Log\LoggerInterface')]);
 
         // make assertion on request attributes
         $this->assertRequest($client, [
@@ -36,7 +36,7 @@ class GuzzlerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testGuzzleResponseCanBeMocked() {
-        $client = $this->getMockForAbstractClass('Renegare\HTTP\AbstractClient', ['https://api.example.com', $this->getMock('Psr\Log\LoggerInterface')]);
+        $client = $this->getMockForAbstractClass('Renegare\GuzzleClientHelper\AbstractClient', ['https://api.example.com', $this->getMock('Psr\Log\LoggerInterface')]);
 
         // mock with string
         $responseMessage = <<<EOF
@@ -76,7 +76,7 @@ EOF
     }
 
     public function testMockedClientExceptionIsThrownFor4XX() {
-        $client = $this->getMockForAbstractClass('Renegare\HTTP\AbstractClient', ['https://api.example.com', $this->getMock('Psr\Log\LoggerInterface')]);
+        $client = $this->getMockForAbstractClass('Renegare\GuzzleClientHelper\AbstractClient', ['https://api.example.com', $this->getMock('Psr\Log\LoggerInterface')]);
         try {
             $badResponse = <<<EOF
 HTTP/1.1 400 Bad Request
@@ -99,7 +99,7 @@ EOF
     }
 
     public function testMockedClientExceptionIsThrownFor5XX() {
-        $client = $this->getMockForAbstractClass('Renegare\HTTP\AbstractClient', ['https://api.example.com', $this->getMock('Psr\Log\LoggerInterface')]);
+        $client = $this->getMockForAbstractClass('Renegare\GuzzleClientHelper\AbstractClient', ['https://api.example.com', $this->getMock('Psr\Log\LoggerInterface')]);
         try {
             $badResponse = <<<EOF
 HTTP/1.1 503 Service Unavailable

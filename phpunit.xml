@@ -23,6 +23,6 @@
         </blacklist>
     </filter>
     <listeners>
-        <listener class="Renegare\HTTP\LoggerTestListener" />
+        <listener class="Renegare\GuzzleClientHelper\LoggerTestListener" />
     </listeners>
 </phpunit>

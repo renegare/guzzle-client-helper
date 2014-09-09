@@ -1,6 +1,6 @@
 <?php
 
-namespace Renegare\HTTP;
+namespace Renegare\GuzzleClientHelper;
 
 use GuzzleHttp\Client as GuzzleClient;
 

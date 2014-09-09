@@ -1,9 +1,9 @@
 <?php
 
-namespace Renegare\HTTP\Test;
+namespace Renegare\GuzzleClientHelper\Test;
 
-use Renegare\HTTP\JSONClient;
-use Renegare\HTTP\GuzzlerTestTrait;
+use Renegare\GuzzleClientHelper\JSONClient;
+use Renegare\GuzzleClientHelper\GuzzlerTestTrait;
 
 class JSONClientTest extends \PHPUnit_Framework_TestCase {
     use GuzzlerTestTrait;

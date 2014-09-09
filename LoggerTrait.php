@@ -1,6 +1,6 @@
 <?php
 
-namespace Renegare\HTTP;
+namespace Renegare\GuzzleClientHelper;
 
 use Psr\Log\LoggerTrait as PsrLoggerTrait;
 use Psr\Log\LoggerAwareTrait;

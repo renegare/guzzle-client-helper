@@ -1,11 +1,11 @@
 {
-    "name": "renegare/http",
+    "name": "renegare/guzzle-client-helper",
     "description": "Simple testable generic guzzle http client helper",
     "keywords": ["guzzle", "http", "client", "renegare"],
     "license": "MIT",
 
     "autoload": {"psr-4": {
-        "Renegare\\HTTP\\": "."
+        "Renegare\\GuzzleClientHelper\\": "."
     }},
 
     "require": {

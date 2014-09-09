@@ -1,6 +1,6 @@
 <?php
 
-namespace Renegare\HTTP\Test;
+namespace Renegare\GuzzleClientHelper\Test;
 
 class AbstractClientTest extends \PHPUnit_Framework_TestCase {
 
@@ -24,7 +24,7 @@ class AbstractClientTest extends \PHPUnit_Framework_TestCase {
         $expectedData = ['some' => 'data'];
         $expectedHeaders = ['SOME' => 'header'];
         $assertRequest = $this->getMock('GuzzleHttp\Message\ResponseInterfce');
-        $client = $this->getMockForAbstractClass('Renegare\HTTP\AbstractClient', ['http://api.example.com']);
+        $client = $this->getMockForAbstractClass('Renegare\GuzzleClientHelper\AbstractClient', ['http://api.example.com']);
         $client->expects($this->once())->method('request')->will($this->returnCallback(function($method = 'get', $resource=null, $data = null, array $headers = [])
             use ($assertRequest, $expectedMethod, $expectedResource, $expectedData, $expectedHeaders){
 
@@ -43,7 +43,7 @@ class AbstractClientTest extends \PHPUnit_Framework_TestCase {
      * @expectedException BadMethodCallException
      */
     public function testUnsupportedMethodException() {
-        $client = $this->getMockForAbstractClass('Renegare\HTTP\AbstractClient', ['http://api.example.com']);
+        $client = $this->getMockForAbstractClass('Renegare\GuzzleClientHelper\AbstractClient', ['http://api.example.com']);
         $client->push();
     }
 }
