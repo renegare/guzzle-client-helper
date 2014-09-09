@@ -52,7 +52,7 @@ EOF
         $this->assertEquals($responseMessage, preg_replace('/\r/', '', (string) $response));
 
         // mock with response object
-        $responseMessage = $this->createassertRequest(<<<EOF
+        $responseMessage = $this->createMockResponse(<<<EOF
 HTTP/1.1 200 OK
 Content-Type: application/json
 Date: Thu, 04 Sep 2014 16:53:13 GMT
@@ -87,7 +87,7 @@ Date: Thu, 04 Sep 2014 16:53:13 GMT
 EOF
 ;
             $this->assertRequest($client, [], function($request) use ($badResponse) {
-                return $this->createassertRequest($badResponse);
+                return $this->createMockResponse($badResponse);
             });
 
             $client->getGuzzle()->get('https://api.example.com/resource', []);
@@ -110,7 +110,7 @@ Date: Thu, 04 Sep 2014 16:53:13 GMT
 EOF
 ;
             $this->assertRequest($client, [], function($request) use ($badResponse) {
-                return $this->createassertRequest($badResponse);
+                return $this->createMockResponse($badResponse);
             });
 
             $client->getGuzzle()->get('https://api.example.com/resource', []);

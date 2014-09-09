@@ -48,7 +48,7 @@ trait GuzzlerTestTrait {
                     if($assertRequest instanceOf \Closure) {
                         $response = $assertRequest($request);
                     } else {
-                        $response = $this->createassertRequest($assertRequest, $request);
+                        $response = $this->createMockResponse($assertRequest, $request);
                     }
 
                     if($response->getStatusCode() > 399) {
@@ -61,7 +61,7 @@ trait GuzzlerTestTrait {
 
     }
 
-    public function createassertRequest($response = null, RequestInterface $request = null) {
+    public function createMockResponse($response = null, RequestInterface $request = null) {
         if($response instanceOf ResponseInterface) {
             $response = (string) $response;
         }
