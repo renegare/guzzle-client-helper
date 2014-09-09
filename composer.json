@@ -1,5 +1,5 @@
 {
-    "name": "renegare/guzzlehttp-client-helper",
+    "name": "renegare/http",
     "description": "Simple testable generic guzzle http client helper",
     "keywords": ["guzzle", "http", "client", "renegare"],
     "license": "MIT",
