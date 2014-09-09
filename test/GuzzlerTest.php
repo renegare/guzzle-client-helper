@@ -62,7 +62,7 @@ EOF
 );
         $this->assertRequest($client, [], $responseMessage);
         $response = $client->getGuzzle()->get('https://api.example.com/resource', []);
-        $this->assertNotSame($responseMessage, $response);
+        $this->assertSame($responseMessage, $response);
         $this->assertEquals((string) $responseMessage, (string) $response);
 
         // mock with array

@@ -48,7 +48,11 @@ trait GuzzlerTestTrait {
                     if($assertRequest instanceOf \Closure) {
                         $response = $assertRequest($request);
                     } else {
-                        $response = $this->createMockResponse($assertRequest, $request);
+                        $response = $assertRequest;
+                    }
+
+                    if(!($response instanceOf ResponseInterface)) {
+                        $response = $this->createMockResponse($response, $request);
                     }
 
                     if($response->getStatusCode() > 399) {
