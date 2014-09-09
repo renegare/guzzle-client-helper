@@ -22,11 +22,6 @@ class JSONClient extends AbstractClient {
             $options['body'] = $data;
         }
 
-        $type = $method !== 'get' && is_array($data) ? 'json' : 'body';
-        if($data) {
-            $options[$type] = $data;
-        }
-
         $request = $this->createRequest($method, $resource, $options);
         $this->debug('<< Requesting platform resource ...', ['request' => (string) $request]);
         try {

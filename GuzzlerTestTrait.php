@@ -4,40 +4,94 @@ namespace Renegare\HTTP;
 
 use GuzzleHttp\Message\MessageFactory;
 use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Exception\ClientException;
 
 trait GuzzlerTestTrait {
-    public function mockHTTPResponse(GuzzlerInterface $client, $expectedMethod = 'GET', $expectedResource, \Closure $requestCallback = null, $expectToBeCalled = true) {
-        $mockHttpClient = $this->getMockBuilder('GuzzleHttp\Client')
+    public function assertRequest(GuzzlerInterface $client, array $expectedRequest = [], $assertRequest = null, $expectToBeCalled = true) {
+        $mock = $this->getMockBuilder('GuzzleHttp\Client')
             ->setMethods(['send'])
             ->getMock();
+        $client->setGuzzle($mock);
 
-        $mockHttpClient->expects($expectToBeCalled? $this->once() : $this->never())
-            ->method('send')
-            ->will($this->returnCallback(function($request) use ($client, $expectedResource, $expectedMethod, $requestCallback){
-                $client->setGuzzle(null);
-                $this->assertEquals($expectedResource, $request->getUrl());
-                $this->assertEquals(strtolower($expectedMethod), strtolower($request->getMethod()));
+        $mockMethod = $mock->expects($expectToBeCalled? $this->once() : $this->never());
 
-                $response = $requestCallback? $requestCallback($request) : [];
+        if($expectToBeCalled) {
+            $mockMethod->method('send')
+                ->will($this->returnCallback(function(RequestInterface $request) use ($client, $expectedRequest, $assertRequest) {
+                    $client->setGuzzle(null);
 
-                if(!($response instanceof ResponseInterface)) {
-                    $factory = new MessageFactory();
-                    $fakeJson = json_encode($response? $response : '');
-                    $responseMessage = sprintf('HTTP/1.1 %s OK
-Content-Type: application/json
+                    if(isset($expectedRequest['method'])) {
+                        $this->assertEquals(strtolower($request->getMethod()), strtolower($expectedRequest['method']), 'Expected request method match');
+                    }
+
+                    if(isset($expectedRequest['path'])) {
+                        $this->assertEquals($expectedRequest['path'], $request->getPath(), 'Expected request path match');
+                    }
+
+                    if(isset($expectedRequest['query'])) {
+                        $this->assertEquals($expectedRequest['query'], $request->getQuery()->toArray(), 'Expected request query match');
+                    }
+
+                    if(isset($expectedRequest['body'])) {
+                        $this->assertEquals($expectedRequest['body'], (string) $request->getBody(), 'Expected request body match');
+                    }
+
+                    if(isset($expectedRequest['headers'])) {
+                        $headers = $request->getHeaders();
+                        foreach($expectedRequest['headers'] as $name => $value) {
+                            $this->assertArrayHasKey($name, $headers);
+                            $this->assertEquals(implode(',', $headers[$name]), $value);
+                        }
+                    }
+
+                    if($assertRequest instanceOf \Closure) {
+                        $response = $assertRequest($request);
+                    } else {
+                        $response = $this->createassertRequest($assertRequest, $request);
+                    }
+
+                    if($response->getStatusCode() > 399) {
+                        throw new ClientException($response->getReasonPhrase(), $request, $response);
+                    }
+
+                    return $response;
+                }));
+        }
+
+    }
+
+    public function createassertRequest($response = null, RequestInterface $request = null) {
+        if($response instanceOf ResponseInterface) {
+            $response = (string) $response;
+        }
+
+        if(is_array($response) && (!$request || $request->getHeader('Content-Type') === 'application/json')) {
+            $json = json_encode($response);
+            $response = sprintf(<<<EOF
+HTTP/1.1 200 OK
 Date: %s
-Content-Length: %s
 Connection: keep-alive
+Content-length: %s
+Content-type: application/json
 
 %s
-', 200, date('r'), strlen($fakeJson), json_encode($response));
+EOF
+, date('D, d M Y H:i:s T'), strlen($json), $json);
+        }
 
-                    $response = $factory->fromMessage($responseMessage);
-                }
+        if(!is_string($response)) {
+            $response = sprintf(<<<EOF
+HTTP/1.1 204 No Content
+Date: %s
+Connection: keep-alive
+EOF
+, date('D, d M Y H:i:s T'));
+        }
 
-                return $response;
-            }));
+        $factory = new MessageFactory();
+        $response = $factory->fromMessage($response);
 
-        $client->setGuzzle($mockHttpClient);
+        return $response;
     }
 }

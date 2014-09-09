@@ -7,15 +7,13 @@ use Psr\Log\LoggerInterface;
 abstract class AbstractClient implements LoggerInterface, GuzzlerInterface {
     use LoggerTrait, GuzzlerTrait;
 
-    protected $endPoint;
-
     /**
      * @param string $endPoint - http://api.endpoint.com (no trailing slash)
      * @param LoggerInterface $logger [optional]
      */
-    public function __construct($endPoint, LoggerInterface $logger = null) {
+    public function __construct($baseUrl, LoggerInterface $logger = null) {
         $this->logger = $logger;
-        $this->endPoint = $endPoint;
+        $this->baseUrl = $baseUrl;
     }
 
     /**
@@ -40,10 +38,6 @@ abstract class AbstractClient implements LoggerInterface, GuzzlerInterface {
     abstract protected function request($method = 'get', $resource=null, $data = null, array $headers = []);
 
     protected function createRequest($method, $resource=null, array $options = []) {
-        return $this->getGuzzle()->createRequest($method, $this->getUrl($resource), $options);
-    }
-
-    protected function getUrl($resource) {
-        return sprintf('%s/%s', $this->endPoint, $resource);
+        return $this->getGuzzle()->createRequest($method, $resource, $options);
     }
 }

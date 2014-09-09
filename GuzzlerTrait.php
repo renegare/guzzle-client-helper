@@ -8,6 +8,7 @@ use GuzzleHttp\Subscriber\Log\LogSubscriber;
 trait GuzzlerTrait {
 
     protected $guzzleHttp;
+    protected $baseUrl;
 
     /**
      * {@inheritdoc}
@@ -21,7 +22,7 @@ trait GuzzlerTrait {
      */
     public function getGuzzle() {
         if(!$this->guzzleHttp) {
-            $client = new GuzzleClient();
+            $client = new GuzzleClient(['base_url' => $this->baseUrl]);
             if($this->logger) {
                 $subscriber = new LogSubscriber($this->logger);
                 $client->getEmitter()->attach($subscriber);
