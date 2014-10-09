@@ -5,6 +5,7 @@ namespace Renegare\GuzzleClientHelper;
 use GuzzleHttp\Message\MessageFactory;
 use GuzzleHttp\Message\ResponseInterface;
 use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Message\Request;
 use GuzzleHttp\Exception\ClientException;
 
 trait GuzzlerTestTrait {
@@ -18,7 +19,7 @@ trait GuzzlerTestTrait {
 
         if($expectToBeCalled) {
             $mockMethod->method('send')
-                ->will($this->returnCallback(function(RequestInterface $request) use ($client, $expectedRequest, $assertRequest) {
+                ->will($this->returnCallback(function(Request $request) use ($client, $expectedRequest, $assertRequest) {
                     $client->setGuzzle(null);
 
                     if(isset($expectedRequest['method'])) {
@@ -29,20 +30,32 @@ trait GuzzlerTestTrait {
                         $this->assertEquals($expectedRequest['path'], $request->getPath(), 'Expected request path match');
                     }
 
-                    if(isset($expectedRequest['query'])) {
-                        $this->assertEquals($expectedRequest['query'], $request->getQuery()->toArray(), 'Expected request query match');
-                    }
-
-                    if(isset($expectedRequest['body'])) {
-                        $this->assertEquals($expectedRequest['body'], (string) $request->getBody(), 'Expected request body match');
-                    }
-
                     if(isset($expectedRequest['headers'])) {
                         $headers = $request->getHeaders();
                         foreach($expectedRequest['headers'] as $name => $value) {
                             $this->assertArrayHasKey($name, $headers);
                             $this->assertEquals(implode(',', $headers[$name]), $value);
                         }
+                    }
+
+                    if(isset($expectedRequest['query'])) {
+                        $this->assertEquals($expectedRequest['query'], $request->getQuery()->toArray(), 'Expected request query match');
+                    }
+
+                    if(isset($expectedRequest['body'])) {
+                        $bodyContent = (string) $request->getBody();
+                        $expectedBody = $expectedRequest['body'];
+                        if(is_array($expectedBody) && $request->hasHeader('Content-Type')) {
+                            switch($request->getHeader('Content-Type')) {
+                                case 'application/x-www-form-urlencoded':
+                                    parse_str($bodyContent, $bodyContent);
+                                    break;
+                                case 'application/json':
+                                    parse_str($bodyContent, $bodyContent);
+                                    break;
+                            }
+                        }
+                        $this->assertEquals($expectedBody, $bodyContent, 'Expected request body match');
                     }
 
                     if($assertRequest instanceOf \Closure) {
